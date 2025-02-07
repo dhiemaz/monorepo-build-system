@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.app.service.member.MemberServiceApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-02-07T16:54:12" hostname="Dimass-MacBook-Pro.local" time="0.447">
+  <properties/>
+  <testcase name="contextLoads()" classname="com.app.service.member.MemberServiceApplicationTests" time="0.447"/>
+  <system-out><![CDATA[23:54:11.210 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.app.service.member.MemberServiceApplicationTests]: MemberServiceApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+23:54:11.307 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.app.service.member.MemberServiceApplication for test class com.app.service.member.MemberServiceApplicationTests
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.2)
+
+2025-02-07T23:54:11.476+07:00  INFO 56699 --- [sample-monorepo] [    Test worker] c.a.s.m.MemberServiceApplicationTests    : Starting MemberServiceApplicationTests using Java 21.0.1 with PID 56699 (started by dimas in /Users/dimas/java_workspace/monorepo-build-system/member)
+2025-02-07T23:54:11.476+07:00  INFO 56699 --- [sample-monorepo] [    Test worker] c.a.s.m.MemberServiceApplicationTests    : No active profile set, falling back to 1 default profile: "default"
+2025-02-07T23:54:11.724+07:00  INFO 56699 --- [sample-monorepo] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-02-07T23:54:11.725+07:00  INFO 56699 --- [sample-monorepo] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-02-07T23:54:11.739+07:00  INFO 56699 --- [sample-monorepo] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 5 ms. Found 0 Redis repository interfaces.
+2025-02-07T23:54:12.390+07:00  INFO 56699 --- [sample-monorepo] [    Test worker] c.a.s.m.MemberServiceApplicationTests    : Started MemberServiceApplicationTests in 1.023 seconds (process running for 1.617)
+]]></system-out>
+  <system-err><![CDATA[Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build what is described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (/Users/dimas/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.15.11/a38b16385e867f59a641330f0362ebe742788ed8/byte-buddy-agent-1.15.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+</testsuite>

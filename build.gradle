@@ -1,5 +1,3 @@
-import java.util.concurrent.ConcurrentHashMap
-
 plugins {
     id 'java'
     id 'war'
@@ -7,9 +5,22 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'com.app.service'
-version = '0.0.1'
+// Konfigurasi untuk semua project
+allprojects {
+    group = 'com.app.service'
+    version = '0.0.1'
 
+    repositories {
+        mavenCentral()
+    }
+}
+
+// Konfigurasi khusus untuk subproject
+subprojects {
+    apply plugin: 'java'
+}
+
+// Konfigurasi Java toolchain
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -20,10 +31,6 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
-}
-
-repositories {
-    mavenCentral()
 }
 
 bootJar { enabled = false }
@@ -47,48 +54,73 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-tasks.register("buildServices") {
-    description = "Builds specified services or all services if none are specified."
-    group = "build"
+def subProjects = ['catalog', 'member', 'transaction', 'payment']
 
-    doLast {
-        def services = project.findProperty("services")?.split(",") ?: subprojects.collect { it.name }
-        println "🔨 Building services: ${services.join(', ')}"
-
-        def serviceProjects = subprojects.findAll { services.contains(it.name) }
-        if (serviceProjects.isEmpty()) {
-            throw new GradleException("❌ No valid services found for: ${services.join(', ')}")
-        }
-
-        serviceProjects.each { serviceProject ->
-            dependsOn(":${serviceProject.name}:build")
-        }
+subProjects.each { service ->
+    tasks.register(service) {
+        dependsOn ":${service}:build"
     }
 }
 
+def requestedTasks = gradle.startParameter.taskNames
+
+tasks.register("buildServices") {
+    group = "build"
+    dependsOn(":catalog:build", ":member:build", ":transaction:build", ":payment:build")
+}
+
+tasks.register("builds") {
+    group = "build"
+
+    if (requestedTasks.size() > 1) {
+        subprojects { proj ->
+            if (!requestedTasks.contains(proj.name)) {
+                tasks.matching { it.name == 'build' }.all { task ->
+                    task.enabled = false
+                }
+            }
+        }        
+    } 
+}
+
+
 import java.nio.file.*
 
+// File untuk menyimpan PID service yang berjalan
 def pidFile = file("$buildDir/service-pids.txt")
 
-tasks.register("run") {
-    description = "Runs specified services in parallel in the foreground."
+// Ambil daftar task yang diminta, kecuali 'runs'
+def requestedServices = gradle.startParameter.taskNames.findAll { it != "runs" }
+
+tasks.register("runs") {
     group = "application"
+    description = "Runs specified services in parallel in the foreground."
+
+    doFirst {
+        if (requestedServices.isEmpty()) {
+            throw new GradleException("❌ Please specify service names after runs, e.g. gradle runs catalog or gradle runs catalog payment")
+        }
+        
+        // Nonaktifkan task build pada subproject yang tidak termasuk dalam daftar requestedServices.
+        subprojects { proj ->
+            if (!requestedServices.contains(proj.name)) {
+                proj.tasks.matching { it.name == 'build' }.configureEach { task ->
+                    task.enabled = false
+                }
+            }
+        }
+    }
 
     doLast {
-        def serviceProp = project.findProperty("Services")?.toString() ?: ""
-        def services = serviceProp.trim() ? serviceProp.split(",") as List : []
-
-        if (services.isEmpty()) {
-            throw new GradleException("❌ Please specify services with -PserviceNames=<service1,service2>")
-        }
-
-        def serviceProjects = subprojects.findAll { services.contains(it.name) }
+        // Cari subproject yang sesuai dengan nama yang diminta.
+        def serviceProjects = subprojects.findAll { requestedServices.contains(it.name) }
         if (serviceProjects.isEmpty()) {
             throw new GradleException("❌ No valid services found. Available: ${subprojects*.name}")
         }
+        
+        println "🚀 Running services: ${requestedServices.join(', ')}"
 
-        println "🚀 Running services: ${services.join(', ')}"
-
+        // def pidFile = file("$buildDir/service-pids.txt")
         pidFile.text = "" // Clear previous PIDs
 
         serviceProjects.each { serviceProject ->
@@ -100,13 +132,14 @@ tasks.register("run") {
                 .inheritIO()
                 .start()
 
-            // Save PID for later termination
+            // Simpan PID untuk penghentian nanti
             def pid = process.toHandle().pid()
             println "✅ ${serviceName} started with PID: $pid"
             pidFile.append("$pid\n")
         }
     }
 }
+
 
 // Task to stop running services
 tasks.register("stop") {
