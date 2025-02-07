@@ -91,48 +91,48 @@ Modules can easily share code, reducing duplication and increasing reusability.
 
 * Complex Build Configuration:
 
-- Challenge:
+[-] Challenge:
 Configuring and managing a multi-project Gradle setup can become complex, especially with many interdependent modules. Maintaining extensive and interrelated build scripts can be challenging.
 
-- Solution:
+[-] Solution:
 Create a modular and reusable configuration structure (e.g., using separate Gradle scripts or convention plugins). Utilize Gradle features like buildSrc to centrally manage build logic.
 
 * Potentially Longer Build Times:
 
-- Challenge:
+[-] Challenge:
 Without proper optimization, building the entire monorepo—even selectively—can lead to longer build times, especially when there are inter-module dependencies.
 
-- Solution:
+[-] Solution:
 Take advantage of Gradle’s incremental build and parallel execution features. Configure module dependencies appropriately to avoid unnecessary rebuilds of unaffected modules.
 
 * Difficulty in Isolating Issues:
 
-- Challenge:
+[-] Challenge:
 When an error or bug occurs, it can be difficult to determine which module is causing the problem due to the interactions among modules in one repository.
 
-- Solution:
+[-] Solution:
 Implement robust logging and monitoring for each module.Use comprehensive testing strategies (unit tests, integration tests) to isolate and detect issues early.
 
 * Managing Inter-Module Dependencies:
 
-- Challenge:
+[-] Challenge:
 There is a risk of version conflicts or unclear dependencies between modules if not strictly controlled.
 
-- Solution:
+[-] Solution:
 Use dependency locking mechanisms or enforce consistent versions across modules.Conduct periodic reviews of dependency configurations to ensure they remain synchronized.
 
 * Complexity in CI/CD Pipeline:
 
-- Challenge:
+[-] Challenge:
 The CI/CD pipeline must detect changes in specific modules and selectively run builds and tests, adding to the complexity of pipeline configuration.
 
-- Solution:
+[-] Solution:
 Implement scripts or tools that automatically detect which modules are affected by a commit.Leverage caching and parallelism features in your CI/CD system to optimize execution times.
 
 * High Technical Skill Requirements:
 
-- Challenge:
+[-] Challenge:
 A monorepo approach with complex Gradle configurations requires a team with in-depth understanding of Gradle and best practices in project management.
 
-- Solution:
+[-] Solution:
 Provide regular training and internal documentation to ensure the team understands the build structure and configuration. Document the monorepo architecture and best practices so that developers have a reference to minimize errors.
