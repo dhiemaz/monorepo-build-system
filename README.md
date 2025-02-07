@@ -4,6 +4,7 @@ This is monorepo layout for build system using springboot and gradle.
 
 In this layout there are 4 subprojects:
 
+
 ------------------------------------------------------------
 Root project 'sample-monorepo'
 ------------------------------------------------------------
@@ -148,3 +149,7 @@ A monorepo approach with complex Gradle configurations requires a team with in-d
 [-] *Solution*:
 
 Provide regular training and internal documentation to ensure the team understands the build structure and configuration. Document the monorepo architecture and best practices so that developers have a reference to minimize errors.
+
+------------------------------------------------------------
+
+The monorepo approach with selective builds using Gradle offers significant advantages, such as efficient builds, easier dependency management, and improved collaboration. However, it also presents challenges such as complex configuration, potential build time increases, and difficulty isolating issues. With careful planning, optimization of Gradle features, smart CI/CD strategies, and proper training and documentation, these challenges can be effectively managed, providing added value for the project as per the client's request.
