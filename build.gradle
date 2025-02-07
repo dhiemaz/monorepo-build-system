@@ -87,7 +87,7 @@ tasks.register("builds") {
 import java.nio.file.*
 
 // File untuk menyimpan PID service yang berjalan
-def pidFile = file("$buildDir/service-pids.txt")
+def pidFile = file("$rootDir/service-pids.txt")
 
 // Ambil daftar task yang diminta, kecuali 'runs'
 def requestedServices = gradle.startParameter.taskNames.findAll { it != "runs" }
