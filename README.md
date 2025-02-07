@@ -4,7 +4,7 @@ This is monorepo layout for build system using springboot and gradle.
 
 In this layout there are 4 subprojects:
 
-
+```text
 ------------------------------------------------------------
 Root project 'sample-monorepo'
 ------------------------------------------------------------
@@ -14,6 +14,7 @@ Root project 'sample-monorepo'
 +--- Project ':member'
 +--- Project ':payment'
 \--- Project ':transaction'
+```
 
 # How to run
 
