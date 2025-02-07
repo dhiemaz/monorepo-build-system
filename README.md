@@ -2,6 +2,21 @@
 
 This is monorepo layout for build system using springboot and gradle. 
 
+### Reference Documentation
+
+For further reference, please consider the following sections:
+
+* [Official Gradle documentation](https://docs.gradle.org)
+* [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/3.4.2/gradle-plugin)
+
+### Additional Links
+
+These additional references should also help you:
+
+* [Gradle Build Scans – insights for your project's build](https://scans.gradle.com#gradle)
+
+### Project Layout
+
 In this layout there are 4 subprojects:
 
 ```text
@@ -63,7 +78,8 @@ $gradle build
 # Analysis and Considerations
 
 ### a. Benefits of This Approach 
-Selective Builds:
+
+* Selective Builds:
 
 By using commands like gradle builds payment or gradle builds payment catalog, you can build only the required modules. This saves time and resources, as there is no need to build the entire monorepo when the client only requests a subset.
 
