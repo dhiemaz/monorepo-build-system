@@ -1,0 +1,2 @@
+rootProject.name = 'sample-monorepo'
+include 'catalog', 'member', 'payment', 'transaction'

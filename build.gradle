@@ -1,0 +1,140 @@
+import java.util.concurrent.ConcurrentHashMap
+
+plugins {
+    id 'java'
+    id 'war'
+    id 'org.springframework.boot' version '3.4.2'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.app.service'
+version = '0.0.1'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+bootJar { enabled = false }
+bootWar { enabled = false }
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+    runtimeOnly 'org.postgresql:postgresql'
+    annotationProcessor 'org.projectlombok:lombok'
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.register("buildServices") {
+    description = "Builds specified services or all services if none are specified."
+    group = "build"
+
+    doLast {
+        def services = project.findProperty("services")?.split(",") ?: subprojects.collect { it.name }
+        println "🔨 Building services: ${services.join(', ')}"
+
+        def serviceProjects = subprojects.findAll { services.contains(it.name) }
+        if (serviceProjects.isEmpty()) {
+            throw new GradleException("❌ No valid services found for: ${services.join(', ')}")
+        }
+
+        serviceProjects.each { serviceProject ->
+            dependsOn(":${serviceProject.name}:build")
+        }
+    }
+}
+
+import java.nio.file.*
+
+def pidFile = file("$buildDir/service-pids.txt")
+
+tasks.register("run") {
+    description = "Runs specified services in parallel in the foreground."
+    group = "application"
+
+    doLast {
+        def serviceProp = project.findProperty("Services")?.toString() ?: ""
+        def services = serviceProp.trim() ? serviceProp.split(",") as List : []
+
+        if (services.isEmpty()) {
+            throw new GradleException("❌ Please specify services with -PserviceNames=<service1,service2>")
+        }
+
+        def serviceProjects = subprojects.findAll { services.contains(it.name) }
+        if (serviceProjects.isEmpty()) {
+            throw new GradleException("❌ No valid services found. Available: ${subprojects*.name}")
+        }
+
+        println "🚀 Running services: ${services.join(', ')}"
+
+        pidFile.text = "" // Clear previous PIDs
+
+        serviceProjects.each { serviceProject ->
+            def serviceName = serviceProject.name
+            println "▶️ Starting ${serviceName} in foreground..."
+
+            def process = new ProcessBuilder("./gradlew", ":${serviceName}:bootRun")
+                .redirectErrorStream(true)
+                .inheritIO()
+                .start()
+
+            // Save PID for later termination
+            def pid = process.toHandle().pid()
+            println "✅ ${serviceName} started with PID: $pid"
+            pidFile.append("$pid\n")
+        }
+    }
+}
+
+// Task to stop running services
+tasks.register("stop") {
+    description = "Stops all running services started by runServices."
+    group = "application"
+
+    doLast {
+        if (!pidFile.exists() || pidFile.text.trim().isEmpty()) {
+            println "⚠️ No running services found."
+            return
+        }
+
+        def pids = pidFile.readLines()
+        pids.each { pid ->
+            println "⛔ Stopping service with PID: $pid"
+            try {
+                ProcessHandle.of(Long.parseLong(pid)).ifPresent { handle ->
+                    handle.destroy()
+                    println "✅ Stopped process $pid"
+                }
+            } catch (Exception e) {
+                println "⚠️ Could not stop process $pid: ${e.message}"
+            }
+        }
+
+        // Clear PID file after stopping
+        pidFile.text = ""
+    }
+}
+
+
